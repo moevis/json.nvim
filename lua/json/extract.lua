@@ -108,7 +108,7 @@ local function view_objects(contents)
 	local group = vim.api.nvim_create_augroup("json.title_win", { clear = true })
 	vim.api.nvim_create_autocmd("WinClosed", {
 		group = group,
-		pattern = win,
+		pattern = tostring(win),
 		once = true,
 		callback = function()
 			for _, b in pairs(buff_arr) do
