@@ -34,7 +34,6 @@ local function extract_json()
 				need_right_paren = need_right_paren - 1
 				if need_right_paren == 0 then
 					table.insert(raw_jsons, line:sub(start_at, i))
-					print(line:sub(start_at, i))
 				end
 			end
 		elseif c == '"' then
@@ -71,8 +70,9 @@ local function view_objects(contents)
 		vim.api.nvim_win_close(window_instance, { force = true })
 	end
 
+  buff_arr = {}
 	curr_index = 1
-	timestamp = os.time()
+	local timestamp = os.time()
 	for i = 1, #contents do
 		local buff = vim.api.nvim_create_buf(false, true)
 		vim.api.nvim_buf_set_option(buff, "filetype", "json")
@@ -84,7 +84,7 @@ local function view_objects(contents)
 	local width = vim.api.nvim_get_option("columns")
 	local height = vim.api.nvim_get_option("lines")
 
-	local win_height = math.ceil(height * 0.8)
+	local win_height = math.ceil(height * 0.8) - 2
 	local win_width = math.ceil(width * 0.8)
 
 	local row = math.ceil((height - win_height) / 2 - 1)
@@ -109,7 +109,6 @@ local function view_objects(contents)
 	vim.api.nvim_create_autocmd("WinClosed", {
 		group = group,
 		pattern = tostring(win),
-		once = true,
 		callback = function()
 			for _, b in pairs(buff_arr) do
 				vim.api.nvim_buf_delete(b, { force = true })
