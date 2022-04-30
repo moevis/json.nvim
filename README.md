@@ -1,6 +1,6 @@
 # json.nvim
 
-json.nvim provides convience for extracting JSON strings in cursor line. I wrote this plugin in order to extract json from log file.
+json.nvim provides convience for extracting JSON strings in cursor line, especially for structrured log files which have inlined json.
 
 ## Requirements
 

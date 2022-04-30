@@ -72,10 +72,11 @@ local function view_objects(contents)
 	end
 
 	curr_index = 1
+	timestamp = os.time()
 	for i = 1, #contents do
 		local buff = vim.api.nvim_create_buf(false, true)
 		vim.api.nvim_buf_set_option(buff, "filetype", "json")
-		vim.api.nvim_buf_set_name(buff, "json.nvim[" .. i .. "].json")
+		vim.api.nvim_buf_set_name(buff, "json.nvim." .. timestamp .. "-" .. i .. ".json")
 		vim.api.nvim_buf_set_lines(buff, 0, 1, false, { contents[i] })
 		table.insert(buff_arr, buff)
 	end
@@ -105,21 +106,18 @@ local function view_objects(contents)
 	window_instance = win
 
 	local group = vim.api.nvim_create_augroup("json.title_win", { clear = true })
-	for _, buff in pairs(buff_arr) do
-		vim.api.nvim_create_autocmd("WinClosed", {
-			group = group,
-			buffer = buff,
-			once = true,
-			callback = function()
-				print("buffs will be clear")
-				for _, b in pairs(buff_arr) do
-					vim.api.nvim_buf_delete(b, { force = true })
-				end
-				curr_index = 1
-				buff_arr = {}
-			end,
-		})
-	end
+	vim.api.nvim_create_autocmd("WinClosed", {
+		group = group,
+		pattern = win,
+		once = true,
+		callback = function()
+			for _, b in pairs(buff_arr) do
+				vim.api.nvim_buf_delete(b, { force = true })
+			end
+			curr_index = 1
+			buff_arr = {}
+		end,
+	})
 
 	if #contents <= 1 then
 		return
@@ -155,7 +153,6 @@ local function view_objects(contents)
 			buffer = buf,
 			once = true,
 			callback = function()
-				print("title will close")
 				vim.api.nvim_win_close(title_win, true)
 			end,
 		})
@@ -191,7 +188,6 @@ function M.prev_json_object()
 		update_content(buff_arr[curr_index])
 	end
 end
-
 
 function M.extract()
 	local result = extract_json()
